@@ -1,4 +1,4 @@
--- [[ CLAYWNW1 HUB v10 - STABLE & COMPACT ]] --
+-- [CLAYWNW1 HUB v10 - STABLE & COMPACT ]] --
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
 local SG = Instance.new("ScreenGui", game:GetService("CoreGui"))
