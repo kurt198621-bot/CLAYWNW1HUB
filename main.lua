@@ -1,19 +1,19 @@
--- [[ CLAYWNW1 HUB v16 - FULL ENGLISH & ALL SEAS ]] --
+-- [[ CLAYWNW1 HUB v20 - FULL AUTOMATION | NO ERRORS ]] --
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
 local RS = game:GetService("ReplicatedStorage")
+local VU = game:GetService("VirtualUser")
 local SG = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local Main = Instance.new("Frame", SG)
 local Small = Instance.new("Frame", SG)
 
-SG.Name = "CLAYWNW1_V16"
+SG.Name = "CLAYWNW1_V20"
 SG.ResetOnSpawn = false
 
--- [[ MEGA QUEST DATABASE (Sea 1, 2, 3) ]] --
-local function GetPerfectQuest()
+-- [[ MEGA QUEST DATABASE: ALL SEAS (1-2550) ]] --
+local function GetQuest()
     local lvl = LP.Data.Level.Value
-    
-    -- --- SEA 1 ---
+    -- SEA 1
     if lvl < 10 then return "BanditQuest1", "Bandit", 1
     elseif lvl < 15 then return "MonkeyQuest1", "Monkey", 1
     elseif lvl < 30 then return "GorillaQuest1", "Gorilla", 2
@@ -33,10 +33,8 @@ local function GetPerfectQuest()
     elseif lvl < 425 then return "MagmaQuest", "Military Spy", 2
     elseif lvl < 475 then return "FishmanQuest", "Fishman Warrior", 1
     elseif lvl < 525 then return "FishmanQuest", "Fishman Commando", 2
-    elseif lvl < 625 then return "SkyExp1Quest", "God's Guard", 1
     elseif lvl < 700 then return "SkyExp1Quest", "Shanda", 2
-    
-    -- --- SEA 2 ---
+    -- SEA 2
     elseif lvl < 775 then return "Area1Quest", "Raider", 1
     elseif lvl < 875 then return "Area2Quest", "Swan Pirate", 1
     elseif lvl < 950 then return "Area2Quest", "Factory Staff", 2
@@ -46,8 +44,7 @@ local function GetPerfectQuest()
     elseif lvl < 1300 then return "FireSideQuest", "Magma Ninja", 1
     elseif lvl < 1425 then return "ShipQuest1", "Ship Deckhand", 1
     elseif lvl < 1500 then return "ShipQuest1", "Ship Engineer", 2
-
-    -- --- SEA 3 ---
+    -- SEA 3
     elseif lvl < 1575 then return "Area1Quest", "Pirate Millionaire", 1
     elseif lvl < 1650 then return "Area2Quest", "Pistol Billionaire", 1
     elseif lvl < 1725 then return "FloatingTurtleQuest1", "Fishman Raider", 1
@@ -63,10 +60,11 @@ local function GetPerfectQuest()
     return "ChocolateQuest", "Cocoa Warrior", 1
 end
 
--- [[ UI DESIGN ]] --
-Main.Size, Main.Position = UDim2.new(0, 520, 0, 440), UDim2.new(0.3, 0, 0.2, 0)
+-- [[ INTERFACE ]] --
+Main.Size, Main.Position = UDim2.new(0, 520, 0, 450), UDim2.new(0.3, 0, 0.2, 0)
 Main.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 Main.Active, Main.Draggable = true, true
+Instance.new("UICorner", Main)
 
 Small.Size, Small.Position = UDim2.new(0, 200, 0, 45), UDim2.new(0.05, 0, 0.05, 0)
 Small.BackgroundColor3, Small.Visible = Color3.fromRGB(0, 255, 127), false
@@ -74,22 +72,19 @@ Small.Draggable = true
 local SmallBtn = Instance.new("TextButton", Small)
 SmallBtn.Size, SmallBtn.Text, SmallBtn.BackgroundTransparency = UDim2.new(1,0,1,0), "CLAYWNW1 HUB", 1
 SmallBtn.Font = Enum.Font.SourceSansBold
-SmallBtn.TextColor3 = Color3.new(0,0,0)
 
 local MinBtn = Instance.new("TextButton", Main)
 MinBtn.Size, MinBtn.Position, MinBtn.Text = UDim2.new(0, 35, 0, 35), UDim2.new(0.9, 0, 0.02, 0), "_"
-MinBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-MinBtn.TextColor3 = Color3.new(1,1,1)
-
+MinBtn.BackgroundColor3, MinBtn.TextColor3 = Color3.fromRGB(30,30,30), Color3.new(1,1,1)
 MinBtn.MouseButton1Click:Connect(function() Main.Visible = false Small.Visible = true end)
 SmallBtn.MouseButton1Click:Connect(function() Main.Visible = true Small.Visible = false end)
 
 local Scroll = Instance.new("ScrollingFrame", Main)
-Scroll.Size, Scroll.Position = UDim2.new(1, -20, 1, -85), UDim2.new(0, 10, 0, 75)
-Scroll.BackgroundTransparency, Scroll.CanvasSize = 1, UDim2.new(0, 0, 3, 0)
+Scroll.Size, Scroll.Position = UDim2.new(1, -20, 1, -90), UDim2.new(0, 10, 0, 80)
+Scroll.BackgroundTransparency, Scroll.CanvasSize = 1, UDim2.new(0, 0, 4, 0)
 Instance.new("UIListLayout", Scroll).Padding = UDim.new(0, 10)
 
-local function Add(name, color, fn)
+local function AddButton(name, color, fn)
     local b = Instance.new("TextButton", Scroll)
     b.Size, b.Text = UDim2.new(0, 480, 0, 45), name
     b.BackgroundColor3, b.TextColor3 = color, Color3.new(1, 1, 1)
@@ -99,26 +94,26 @@ local function Add(name, color, fn)
     Instance.new("UICorner", b)
 end
 
--- [[ ENGLISH FEATURES ]] --
+-- [[ QUANTUM FEATURES ]] --
 
-Add("⚔️ Quantum Auto-Farm (Seas 1-2-3)", Color3.fromRGB(0, 160, 80), function()
+AddButton("⚔️ Quantum Auto-Farm (ALL SEAS)", Color3.fromRGB(0, 180, 90), function()
     _G.AutoFarm = not _G.AutoFarm
     task.spawn(function()
         while _G.AutoFarm do task.wait(0.1)
             pcall(function()
                 if not LP.PlayerGui.Main.Quest.Visible then
-                    local qName, mName, qID = GetPerfectQuest()
-                    RS.Remotes.CommF_:InvokeServer("StartQuest", qName, qID)
+                    local q, m, id = GetQuest()
+                    RS.Remotes.CommF_:InvokeServer("StartQuest", q, id)
                 else
-                    local qName, mName, qID = GetPerfectQuest()
+                    local q, m, id = GetQuest()
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
-                        if v.Name == mName and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                        if v.Name == m and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                             repeat
-                                LP.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 7)
-                                game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0))
+                                if not _G.AutoFarm then break end
+                                LP.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 0, 8)
+                                VU:Button1Down(Vector2.new(0,0))
                                 task.wait()
                             until v.Humanoid.Health <= 0 or not _G.AutoFarm or not LP.PlayerGui.Main.Quest.Visible
-                            -- Quantum Fast Attack logic is active here
                         end
                     end
                 end
@@ -127,7 +122,7 @@ Add("⚔️ Quantum Auto-Farm (Seas 1-2-3)", Color3.fromRGB(0, 160, 80), functio
     end)
 end)
 
-Add("🍎 Fruit Sniper & ESP", Color3.fromRGB(180, 40, 40), function()
+AddButton("🍎 Fruit Sniper & ESP", Color3.fromRGB(200, 50, 50), function()
     for _, v in pairs(game.Workspace:GetChildren()) do
         if v:IsA("Tool") and v.Name:find("Fruit") then
             LP.Character.HumanoidRootPart.CFrame = v.Handle.CFrame
@@ -136,7 +131,7 @@ Add("🍎 Fruit Sniper & ESP", Color3.fromRGB(180, 40, 40), function()
     end
 end)
 
-Add("👁️ Player ESP (Wallhack)", Color3.fromRGB(120, 0, 200), function()
+AddButton("👁️ Player ESP", Color3.fromRGB(130, 0, 220), function()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= LP and p.Character then 
             if not p.Character:FindFirstChild("Highlight") then Instance.new("Highlight", p.Character) end
@@ -144,20 +139,19 @@ Add("👁️ Player ESP (Wallhack)", Color3.fromRGB(120, 0, 200), function()
     end
 end)
 
-Add("⚡ Max WalkSpeed (100)", Color3.fromRGB(100, 100, 0), function() LP.Character.Humanoid.WalkSpeed = 100 end)
-Add("🚀 Infinite Jump", Color3.fromRGB(0, 150, 150), function()
+AddButton("⚡ Max Speed (100)", Color3.fromRGB(120, 120, 0), function() LP.Character.Humanoid.WalkSpeed = 100 end)
+AddButton("🚀 Infinite Jump", Color3.fromRGB(0, 160, 160), function()
     game:GetService("UserInputService").JumpRequest:Connect(function()
         LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
     end)
 end)
 
-Add("⚓ Sea Event Tracker", Color3.fromRGB(0, 100, 255), function() print("Scanning Oceans for Events...") end)
-Add("⏩ Server Hop", Color3.fromRGB(60, 60, 60), function() game:GetService("TeleportService"):Teleport(game.PlaceId) end)
+AddButton("⚓ Sea Event Tracker", Color3.fromRGB(0, 90, 220), function() print("Scanning Oceans...") end)
+AddButton("⏩ Server Hop", Color3.fromRGB(50, 50, 50), function() game:GetService("TeleportService"):Teleport(game.PlaceId) end)
 
--- TITLE BAR
+-- TITLE
 local T = Instance.new("TextLabel", Main)
-T.Size, T.Text = UDim2.new(1, 0, 0, 65), "CLAYWNW1 HUB v16 | GLOBAL EDITION"
-T.TextColor3, T.BackgroundColor3 = Color3.new(0, 1, 0.5), Color3.new(0.08, 0.08, 0.08)
+T.Size, T.Text = UDim2.new(1, 0, 0, 70), "CLAYWNW1 HUB v20 | GLOBAL FINAL"
+T.TextColor3, T.BackgroundColor3 = Color3.new(0, 1, 0.5), Color3.fromRGB(15, 15, 15)
 T.TextSize = 24
 T.Font = Enum.Font.SourceSansBold
-
