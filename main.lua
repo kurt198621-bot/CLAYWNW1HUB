@@ -104,4 +104,4 @@ Close.Size = UDim2.new(0, 40, 0, 40)
 Close.Position = UDim2.new(0.92, 0, 0, 0)
 Close.Text = "X"
 Close.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-Close.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+Close.
