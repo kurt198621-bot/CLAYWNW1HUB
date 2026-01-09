@@ -1,6 +1,5 @@
 -- [[ CLAYWNW1 HUB - ULTIMATE ENGLISH EDITION ]] --
--- Developed for: Blox Fruits
--- Features: Auto Farm, Auto Stats, Teleports, ESP, Raid, Shop
+-- Features: Auto Farm, Auto Stats, Teleports, ESP, Raid, Shop + FLOATING TOGGLE ICON
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
@@ -13,7 +12,7 @@ local Window = Fluent:CreateWindow({
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true, 
     Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.RightControl -- Toggle Menu Key: Right Ctrl
+    MinimizeKey = Enum.KeyCode.RightControl -- Key to Hide Menu
 })
 
 -- [[ TABS ]] --
@@ -46,9 +45,9 @@ function CheckQuest()
     if MyLevel < 10 then return "BanditQuest1", "Bandit", CFrame.new(1060, 16, 1547)
     elseif MyLevel < 15 then return "MonkeyQuest1", "Monkey", CFrame.new(-1600, 36, 150)
     elseif MyLevel < 30 then return "GorillaQuest1", "Gorilla", CFrame.new(-1240, 6, -485)
-    elseif MyLevel < 700 then return "PirateQuest", "Pirate", CFrame.new(-1140, 4, 3827) -- Sea 1 Example
-    elseif MyLevel >= 700 and MyLevel < 1500 then return "Area1Quest", "Raider", CFrame.new(-400, 70, 2000) -- Sea 2 Start
-    else return "ChocolateQuest", "Cocoa Warrior", CFrame.new(100, 50, -200) -- Sea 3
+    elseif MyLevel < 700 then return "PirateQuest", "Pirate", CFrame.new(-1140, 4, 3827)
+    elseif MyLevel >= 700 and MyLevel < 1500 then return "Area1Quest", "Raider", CFrame.new(-400, 70, 2000)
+    else return "ChocolateQuest", "Cocoa Warrior", CFrame.new(100, 50, -200)
     end
 end
 
@@ -63,23 +62,19 @@ Tabs.Main:AddToggle("AutoFarmLevel", {Title = "Auto Farm Level", Default = false
         while _G.AutoFarm do task.wait()
             pcall(function()
                 local QuestName, MonName, MonPos = CheckQuest()
-                
-                -- Taking Quest
                 if not LP.PlayerGui.Main.Quest.Visible then
                     TP(MonPos)
                     CommF:InvokeServer("StartQuest", QuestName, 1)
                     task.wait(0.5)
                 else
-                    -- Searching and Killing Mob
                     for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
                         if v.Name == MonName and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
                             repeat
                                 if not _G.AutoFarm then break end
                                 v.HumanoidRootPart.CanCollide = false
-                                v.HumanoidRootPart.Size = Vector3.new(60, 60, 60) -- Hitbox Expansion
-                                TP(v.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0)) -- Teleport Above
-                                
-                                game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0)) -- Auto Click
+                                v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                                TP(v.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                                game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0))
                                 task.wait()
                             until v.Humanoid.Health <= 0 or not _G.AutoFarm
                         end
@@ -207,14 +202,6 @@ Tabs.Shop:AddSlider("WalkSpeed", {
     end
 })
 
-Tabs.Shop:AddButton({Title = "Redeem All Codes", Callback = function()
-    local codes = {"SUB2GAMERROBOT_EXP1", "KITT_RESET", "Sub2Fer999", "Enyu_is_Pro"}
-    for _, code in pairs(codes) do
-        CommF:InvokeServer("RedeemCode", code)
-        task.wait(0.5)
-    end
-end})
-
 -- [[ SETTINGS ]] --
 SaveManager:SetLibrary(Fluent)
 InterfaceManager:SetLibrary(Fluent)
@@ -225,8 +212,104 @@ SaveManager:BuildConfigSection(Tabs.Settings)
 
 Window:SelectTab(1)
 
+-- [[ 🚀 FLOATING TOGGLE BUTTON SYSTEM ]] --
+-- This system creates a round Blox Fruit icon when the menu is closed.
+
+task.spawn(function()
+    -- Create ScreenGui
+    local ToggleGui = Instance.new("ScreenGui")
+    ToggleGui.Name = "ClaywnwToggle"
+    ToggleGui.Parent = game.CoreGui
+
+    -- Create ImageButton (Round Logo)
+    local ToggleBtn = Instance.new("ImageButton")
+    ToggleBtn.Name = "ToggleBtn"
+    ToggleBtn.Parent = ToggleGui
+    ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    ToggleBtn.BackgroundTransparency = 0.5
+    ToggleBtn.Position = UDim2.new(0.1, 0, 0.1, 0) -- Initial Position
+    ToggleBtn.Size = UDim2.new(0, 60, 0, 60)
+    -- Using a Blox Fruits Icon
+    ToggleBtn.Image = "rbxassetid://9705916024" 
+    ToggleBtn.Visible = false
+    
+    -- Round Corner
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(1, 0)
+    UICorner.Parent = ToggleBtn
+    
+    -- Stroke (Border)
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Parent = ToggleBtn
+    UIStroke.Color = Color3.fromRGB(255, 255, 255)
+    UIStroke.Thickness = 2
+
+    -- Make it Draggable
+    local function MakeDraggable(gui)
+        local UserInputService = game:GetService("UserInputService")
+        local dragging
+        local dragInput
+        local dragStart
+        local startPos
+        
+        local function update(input)
+            local delta = input.Position - dragStart
+            gui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+        
+        gui.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = gui.Position
+                
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+        
+        gui.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                dragInput = input
+            end
+        end)
+        
+        UserInputService.InputChanged:Connect(function(input)
+            if input == dragInput and dragging then
+                update(input)
+            end
+        end)
+    end
+    MakeDraggable(ToggleBtn)
+
+    -- Logic: Toggle Menu
+    ToggleBtn.MouseButton1Click:Connect(function()
+        -- Simulate Right Ctrl press to toggle Fluent
+        game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.RightControl, false, game)
+        game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.RightControl, false, game)
+    end)
+
+    -- Logic: Auto Show/Hide Button
+    -- When Fluent UI is Hidden -> Show Button
+    -- When Fluent UI is Visible -> Hide Button
+    while true do
+        task.wait(0.5)
+        local MainFrame = game.CoreGui:FindFirstChild("Fluent") and game.CoreGui.Fluent:FindFirstChild("Frame")
+        if MainFrame then
+            if MainFrame.Visible then
+                ToggleBtn.Visible = false
+            else
+                ToggleBtn.Visible = true
+            end
+        end
+    end
+end)
+
 Fluent:Notify({
     Title = "CLAYWNW1 HUB",
-    Content = "Script Loaded Successfully! Press Right Ctrl to Hide.",
+    Content = "Loaded! Press Right Ctrl or use the Icon.",
     Duration = 5
 })
